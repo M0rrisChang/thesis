@@ -1,0 +1,520 @@
+---
+title: "bass"
+author: "CYP"
+date: "2020/4/24"
+output: word_document
+---
+
+# ---------------------------------------------US---------------------------------------------
+```{r}
+# starts from 3/12
+Cases <- c(382, 516, 547, 773, 1133, 1789, 1365, 5894, 5421, 6413, 8334, 9819,
+           10073, 12038, 18058, 17821, 19808, 19444, 20922, 26341, 25200, 30227,
+           31987, 33267, 28219, 29595, 29556, 32829, 32385, 35098)
+
+Cases <- c(382, 516, 547, 773, 1133, 1789, 1365, 5894, 5421, 6413, 8334, 9819,
+           10073, 12038, 18058, 17821, 19808, 19444, 20922, 26341, 25200, 30227,
+           31987)
+
+Cases <- Cases / sum(Cases)
+N = length(Cases)
+T_day <- 1:N
+plot(Cases~T_day)
+Bass.nls <- nls(
+  Cases ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=806300, P=0.003, Q=0.38)
+)
+
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+CBpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+plot(Tdelt, CBpdf, xlab = "Day from 3/11", ylab = "Cases per day", type = "l", main = "Coronavirus in US", col="red")
+points(T_day, Cases)
+
+
+# simulation
+CBcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, CBcdf, xlab = "Day from 3/11", ylab = "Cumulative cases", type = "l", main = "Coronavirus in US")
+points(T_day, cumsum(Cases))
+
+
+# 20243 news read
+# 3071 news got kicked out
+# 4729 news are related to coronavirus
+# 1347 news may lead to outrage
+# starts from 1/6
+News <- c(2, 2, 4, 1, 1, 1, 1, 1, 4, 7, 7, 9, 8, 1, 7, 12, 9, 14, 13, 14, 7, 11, 8, 9, 9, 19, 13, 9, 6, 7, 11, 5, 9, 5, 3, 3, 5, 2, 4, 5, 6, 4, 1, 11, 14, 13, 17, 18, 16, 10, 22, 20, 22, 15, 29, 16, 13, 29, 28, 28, 38, 31, 19, 22, 43, 45, 38, 39, 38, 13, 17, 30, 47, 28, 37, 36, 17, 26, 38, 55, 33, 32, 21, 2, 1, 1)
+
+News <- News / sum(News)
+N = length(News)
+T_day <- 1:N
+plot(News ~ T_day)
+Bass.nls <- nls(
+  News ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  #start=list(M=1, P=0.0003, Q=0.38)
+  start=list(M=2000, P=0.0003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+subtitle = paste(p, q, sep = ", ")
+plot(Tdelt, Bpdf, xlab = "Day from 3/11", ylab = "News per day", type = "l", main = "Outrage components in US", sub = subtitle)
+points(T_day, News)
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/11", ylab = "Cumulative news", type = "l", main = "Outrage components in US", sub = subtitle)
+points(T_day, cumsum(News))
+
+
+
+plot(Tdelt, CBpdf, xlab = "Day from 3/11", ylab = "News and cases per day", type = "l", main = "C + B in US")
+lines(Tdelt, Bpdf, col='green')
+# ---------------------------------------------US---------------------------------------------
+```
+
+# ---------------------------------------------UK---------------------------------------------
+```{r}
+Cases <- c(459, 590, 342, 342, 1, 407, 409, 682, 74, 1298, 1053, 674,
+           985, 1438, 1476, 2172, 2933, 2567, 2468, 2673, 3028, 4384,
+           4308, 4516, 3788, 5959, 3843, 3670, 5525, 4398, 8733)
+#Cases <- Cases / sum(Cases)
+N = length(Cases)
+T_day <- 1:N
+Bass.nls <- nls(
+  Cases ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=80000, P=0.003, Q=0.038)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+plot(Tdelt, Bpdf, xlab = "Day from 3/10", ylab = "Cases per day", type = "l", main = "Coronavirus in UK")
+points(T_day, Cases)
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/10", ylab = "Cumulative cases", type = "l", main = "Coronavirus in UK")
+points(T_day, cumsum(Cases))
+
+
+# 25465 news read
+# 5964 news got kicked out
+# 9268 news are related to coronavirus
+# 2619 news may lead to outrage
+# starts from 1/3
+News <- c(2, 2, 2, 1, 1, 2, 5, 4, 16, 15, 8, 13, 8, 21, 18, 16, 19, 10, 7, 12, 14, 9, 8, 16, 9, 5, 12, 17, 14, 19, 18, 6, 2, 5, 5, 8, 5, 11, 5, 8, 35, 28, 36, 29, 41, 35, 27, 54, 54, 62, 47, 63, 29, 35, 79, 63, 62, 68, 63, 58, 40, 77, 63, 64, 59, 48, 42, 48, 61, 75, 77, 84, 88, 55, 59, 66, 86, 79, 92, 10)
+
+# from 1/23 + 10
+News <- c(18, 6, 2, 5, 5, 8, 5, 11, 5, 8, 35, 28, 36, 29, 41, 35, 27, 54, 54, 62, 47, 63, 29, 35, 79, 63, 62, 68, 63, 58, 40, 77, 63, 64, 59, 48, 42, 48, 61, 75, 77, 84, 88, 55, 59, 66, 86, 79, 92, 10)
+
+# 3/11 ~ 4/3
+#News <- c(62, 68, 63, 58, 40, 77, 63, 64, 59, 48, 42, 48, 61, 75, 77, 84, 88, 55, 59, 66, 86, 79, 92, 10)
+
+News <- News / sum(News)
+N = length(News)
+T_day <- 1:N
+Bass.nls <- nls(
+  News ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=6300, P=0.004, Q=0.08)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+subtitle = paste(p, q, sep = ", ")
+plot(Tdelt, Bpdf, xlab = "Day from 3/10", ylab = "News per day", type = "l", main = "Outrage components in UK", sub = subtitle)
+points(T_day, News)
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/10", ylab = "Cumulative news", type = "l", main = "Outrage components in UK", sub = subtitle)
+points(T_day, cumsum(News))
+
+# ---------------------------------------------UK---------------------------------------------
+```
+
+# ---------------------------------------------CA---------------------------------------------
+```{r}
+Cases <- c(165, 63, 179, 143, 143, 335, 192, 618, 702, 461, 791, 640,
+           894, 704, 1118, 1129, 1033, 1724, 1153, 541, 2778, 807,
+           1309, 1269, 1513, 1405)
+N = length(Cases)
+T_day <- 1:N
+Bass.nls <- nls(
+  Cases ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=86300, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+plot(Tdelt, Bpdf, xlab = "Day from 3/15", ylab = "Cases per day", type = "l", main = "Coronavirus in CA")
+points(T_day, Cases)
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/15", ylab = "Cumulative cases", type = "l", main = "Coronavirus in CA")
+points(T_day, cumsum(Cases))
+
+
+# 19619 news read
+# 2633 news got kicked out
+# 7229 news are related to coronavirus
+# 1965 news may lead to outrage
+# starts from 1/9
+News <- c(1, 1, 2, 28, 24, 30, 28, 37, 18, 18, 29, 21, 25, 26, 21, 18, 16, 7, 34, 11, 26, 15, 10, 10, 19, 17, 12, 22, 13, 9, 12, 10, 15, 9, 3, 8, 7, 27, 24, 17, 18, 37, 14, 21, 25, 33, 26, 50, 28, 30, 14, 29, 25, 30, 30, 26, 20, 21, 49, 33, 38, 56, 47, 15, 24, 49, 49, 43, 30, 34, 18, 22, 51, 40, 30, 36, 24, 12, 15, 18, 21, 27, 3, 15, 9)
+
+#
+News <- c(49, 33, 38, 56, 47, 15, 24, 49, 49, 43, 30, 34, 18, 22, 51, 40, 30, 36, 24, 12, 15, 18, 21, 27, 3, 15, 9)
+N = length(News)
+T_day <- 1:N
+plot(News ~ T_day)
+Bass.nls <- nls(
+  News ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=100, P=0.003, Q=-0.0038)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+subtitle = paste(p, q, sep = ", ")
+plot(Tdelt, Bpdf, xlab = "Day from 3/15", ylab = "News per day", type = "l", main = "Outrage components in CA", sub = subtitle)
+points(T_day, News)
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/15", ylab = "Cumulative news", type = "l", main = "Outrage components in CA", sub = subtitle)
+points(T_day, cumsum(News))
+
+# ---------------------------------------------CA---------------------------------------------
+```
+
+# ---------------------------------------------AU---------------------------------------------
+```{r}
+# 3/16
+Cases <- c(80, 75, 116, 113, 110, 280, 419, 192, 362, 320, 446, 333, 497,
+           344, 377, 198, 303, 254, 214, 220, 137, 110, 98, 115, 98, 107)
+Cases <- Cases / sum(Cases)
+N = length(Cases)
+T_day <- 1:N
+Bass.nls <- nls(
+  Cases ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=10300, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+CBpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+plot(Tdelt, CBpdf, xlab = "Day from 3/15", ylab = "Cases per day", type = "l", main = "Coronavirus in AU")
+points(T_day, Cases)
+
+
+# simulation
+CBcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, CBcdf, xlab = "Day from 3/15", ylab = "Cumulative cases", type = "l", main = "Coronavirus in AU")
+points(T_day, cumsum(Cases))
+
+
+# 29790 news read
+# 494 news got kicked out
+# 7654 news are related to coronavirus
+# 1892 news may lead to outrage
+# starts from 1/20
+News <- c(1, 5, 3, 5, 5, 4, 8, 10, 11, 6, 13, 13, 12, 7, 13, 14, 16, 13, 12, 4, 5, 10, 21, 17, 16, 8, 8, 7, 7, 5, 8, 9, 3, 6, 11, 15, 17, 34, 23, 16, 12, 19, 39, 39, 37, 42, 39, 15, 23, 36, 46, 46, 39, 51, 24, 33, 45, 65, 62, 55, 44, 29, 24, 60, 65, 61, 64, 42, 40, 32, 42, 33, 40, 30, 31, 19, 3, 15, 11, 9, 5, 5)
+
+# 3/16 ~ 4/10
+News <- c(45, 65, 62, 55, 44, 29, 24, 60, 65, 61, 64, 42, 40, 32, 42, 33, 40, 30, 31, 19, 3, 15, 11, 9, 5, 5)
+News <- News / sum(News)
+N = length(News)
+T_day <- 1:N
+Bass.nls <- nls(
+  News ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=10300, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+subtitle = paste(p, q, sep = ", ")
+plot(Tdelt, Bpdf, xlab = "Day from 3/15", ylab = "News per day", type = "l", main = "Outrage components in AU", sub = subtitle)
+points(T_day, News)
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/15", ylab = "Cumulative news", type = "l", main = "Outrage components in AU", sub = subtitle)
+points(T_day, cumsum(News))
+
+
+
+plot(Tdelt, CBpdf, xlab = "Day from 3/15", ylab = "News and cases per day", type = "l", main = "C + B in AU")
+lines(Tdelt, Bpdf, col='green')
+# ---------------------------------------------AU---------------------------------------------
+```
+
+# ---------------------------------------------TW---------------------------------------------
+```{r}
+# starts from 3/10
+Cases <- c(2, 1, 1, 1, 3, 6, 8, 10, 23, 8, 27, 18, 16, 26,
+           20, 20, 17, 15, 16, 15, 8, 16, 7, 10, 9, 7, 8, 10, 3, 3, 1, 2)
+
+Cases <- c(2, 1, 1, 1, 3, 6, 8, 10, 23, 8, 27, 18, 16, 26,
+           20, 20, 17, 15, 16, 15, 8, 16, 7, 10, 9)
+Cases <- Cases / sum(Cases)
+N = length(Cases)
+T_day <- 1:N
+Bass.nls <- nls(
+  Cases ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=1000, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+CBpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+plot(Tdelt, CBpdf, xlab = "Day from 3/09", ylab = "Cases per day", type = "l", main = "Coronavirus in TW")
+points(T_day, Cases)
+
+
+# simulation
+CBcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, CBcdf, xlab = "Day from 3/09", ylab = "Cumulative cases", type = "l", main = "Coronavirus in TW")
+points(T_day, cumsum(Cases))
+
+
+# 41841 news read
+# 281 news got kicked out
+# 26143 news are related to coronavirus
+# 7541 news may lead to outrage
+# starts from 1/1
+News <- c(5, 5, 1, 6, 6, 17, 41, 19, 36, 16, 10, 6, 1, 26, 23, 55, 51, 109, 192, 281, 138, 107, 135, 169, 130, 64, 112, 186, 151, 61, 45, 31, 61, 49, 49, 36, 43, 30, 53, 51, 30, 135, 159, 151, 98, 159, 139, 103, 101, 114, 99, 94, 94, 96, 97, 95, 105, 96, 129, 103, 110, 155, 207, 130, 93, 34, 58, 84, 108, 109, 62, 76, 68, 84, 95, 75, 87, 88, 78, 82, 82, 61, 91, 117, 63, 69, 63, 129, 107, 20, 15, 8, 10, 2, 6, 7, 3, 1)
+
+# 3/15 ~ 4/10
+News <- c(84, 95, 75, 87, 88, 78, 82, 82, 61, 91, 117, 63, 69, 63, 129, 107, 20, 15, 8, 10, 2, 6, 7, 3, 1)
+
+# 3/10 ~
+News <- c(96, 98, 59, 71, 66, 82, 85, 70, 74, 77, 69, 81, 79, 53, 79, 105, 60, 59, 61, 124, 91, 12, 4, 5, 5)
+News <- News / sum(News)
+N = length(News)
+N
+T_day <- 1:N
+Bass.nls <- nls(
+  News ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=1000, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+subtitle = paste(p, q, sep = ", ")
+plot(Tdelt, Bpdf, xlab = "Day from 3/9", ylab = "News per day", type = "l", main = "Outrage components in TW", sub = subtitle)
+points(T_day, News)
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 3/9", ylab = "Cumulative news", type = "l", main = "Outrage components in TW", sub = subtitle)
+points(T_day, cumsum(News))
+
+
+
+plot(Tdelt, CBpdf, xlab = "Day from 3/9", ylab = "News and cases per day", type = "l", main = "C + B in TW")
+lines(Tdelt, Bpdf, col='green')
+# ---------------------------------------------TW---------------------------------------------
+```
+
+# ---------------------------------------------CN---------------------------------------------
+```{r}
+Cases <- c(95, 277, 486, 669, 802, 2632, 578, 2054, 1661, 2089, 4739, 3086,
+           3991, 3733, 3147, 3523, 2704, 3015, 2525, 2032, 373, 15136, 6463,
+           2055, 2100, 1921, 1777, 408, 458, 473, 1451, 21, 219, 513, 412, 434,
+           328, 428, 576, 204, 125, 125, 151, 153, 80, 53, 37, 103, 164, 11,
+           13, 32, 26, 30, 25, 44, 54, 94, 55, 92, 99, 95, 70, 121, 115, 102,
+           123, 76, 81, 82, 71, 79, 32, 59, 63, 53, 91, 74, 58)
+
+Cases <- c(95, 277, 486, 669, 802, 2632, 578, 2054, 1661, 2089, 4739, 3086,
+           3991, 3733, 3147, 3523, 2704, 3015, 2525, 2032, 373, 15136, 6463,
+           2055, 2100, 1921, 1777, 408, 458, 473, 1451, 21, 219, 513, 412, 434,
+           328, 428, 576, 204, 125, 125, 151, 153, 80, 53, 37, 103)
+
+Cases <- Cases / sum(Cases)
+
+N = length(Cases)
+T_day <- 1:N
+Bass.nls <- nls(
+  Cases ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=86300, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+CBpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+plot(Tdelt, CBpdf, xlab = "Day from 1/22", ylab = "Cases per day", type = "l", main = "Coronavirus in CN")
+points(T_day, Cases)
+
+
+# simulation
+CBcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, CBcdf, xlab = "Day from 1/22", ylab = "Cumulative cases", type = "l", main = "Coronavirus in CN")
+points(T_day, cumsum(Cases))
+
+
+# row_count 48437
+# 21079 news are related to coronavirus
+# 6166 news may lead to outrage
+# starts from 1/5
+News <- c(4, 6, 1, 1, 15, 1, 19, 2, 4, 2, 4, 3, 10, 8, 16, 62, 74, 103, 108, 80, 94, 107, 94, 149, 134, 132, 131, 114, 140, 162, 155, 155, 152, 125, 147, 148, 148, 143, 128, 163, 146, 121, 118, 132, 115, 112, 123, 180, 119, 104, 86, 134, 124, 125, 119, 93, 146, 116, 101, 115, 132, 117, 80, 84, 80)
+News <- c(103, 108, 80, 94, 107, 94, 149, 134, 132, 131, 114, 140, 162, 155, 155, 152, 125, 147, 148, 148, 143, 128, 163, 146, 121, 118, 132, 115, 112, 123, 180, 119, 104, 86, 134, 124, 125, 119, 93, 146, 116, 101, 115, 132, 117, 80, 84, 80)
+News <- News / sum(News)
+N = length(News)
+T_day <- 1:N
+Bass.nls <- nls(
+  News ~ M * (((P + Q) ^ 2 / P) * exp(-(P + Q) * T_day)) / (1 + (Q / P) * exp(-(P + Q) * T_day)) ^ 2,
+  start=list(M=6300, P=0.003, Q=0.38)
+)
+summary(Bass.nls)
+
+Bcoef <- coef(Bass.nls)
+m <- Bcoef[1]
+p <- Bcoef[2]
+q <- Bcoef[3]
+# setting the starting value for M to the recorded total sales.
+
+# simulation
+Tdelt <- (1:(N * 10)) / 10
+ngete <- exp(-(p + q) * Tdelt)
+Bpdf <- m * ((p + q) ^ 2 / p) * ngete / (1 + (q / p) * ngete) ^ 2
+# plot pdf
+subtitle = paste(p, q, sep = ", ")
+plot(Tdelt, Bpdf, xlab = "Day from 1/22", ylab = "News per day", type = "l", main = "Outrage components in CN", sub = subtitle)
+points(T_day, News)
+lines(Tdelt, CBpdf, col='green')
+
+
+# simulation
+Bcdf <- m * (1 - ngete)/(1 + (q / p) * ngete)
+# plot cdf
+plot(Tdelt, Bcdf, xlab = "Day from 1/22", ylab = "Cumulative news", type = "l", main = "Outrage components in CN", sub = subtitle)
+points(T_day, cumsum(News))
+
+
+plot(Tdelt, CBpdf, xlab = "Day from 1/22", ylab = "Cases per day", type = "l", main = "Coronavirus in CN", col='green')
+lines(Tdelt, Bpdf, col='red')
+```
+
